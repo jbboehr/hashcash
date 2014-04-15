@@ -1,7 +1,7 @@
 
 EXTRA_DIST = # hashcash.def
 
-include_HEADERS = hashcash.h
+include_HEADERS = hashcash.h sdb.h
 
 lib_LTLIBRARIES=libhashcash.la
 
