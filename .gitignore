@@ -21,3 +21,47 @@
 *.i*86
 *.x86_64
 *.hex
+
+# Custom
+*~
+*.o
+*.a
+*.lo
+*.la
+*.log
+*.pyc
+*.pc
+*.exe
+*.gcov
+*.gcda
+*.gcno
+*.stackdump
+*.c.*r.*
+.libs
+.deps
+.dirstamp
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache
+confdefs.h
+config.h
+config.h.in
+config.log
+config.status
+configure
+libtool
+stamp-h1
+
+# specific
+bin/hashcash
+doc/Doxyfile
+doc/html
+test/sha1
+test/test/*
+
+# distros
+*.tar.gz
+*.tgz
+*.tar
+*.zip

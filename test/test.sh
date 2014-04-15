@@ -1,12 +1,20 @@
 #!/bin/sh
 
-hashcash="../hashcash -u -t 040404"
+hashcash="../../bin/hashcash -u -t 040404"
 sha1="../sha1"
 mkdir -p test
 cd test
 
 #v=1
 test=1
+
+cat > stamps <<EOF
+0:050403:space@foo.com:1f0986777f16f66a53241ec3
+0:030404:fax@foo.com:23d5ea11c43287d58ea6a63f
+0:040402:adam+bar@foo.com:0ace5ad5254b4e401036b5f0
+0:040402:jack+bar@foo.com:be45eb4e586a3e08cf7c95c4
+0:040404:fred+xyz@foo.com:20056ff4e877027ef8ba55eb
+EOF
 
 ######################################################################
 
@@ -97,13 +105,6 @@ test=`expr $test + 1`
 ######################################################################
 
 echo -n "test $test (-w) "
-cat > stamps <<EOF
-0:050403:space@foo.com:1f0986777f16f66a53241ec3
-0:030404:fax@foo.com:23d5ea11c43287d58ea6a63f
-0:040402:adam+bar@foo.com:0ace5ad5254b4e401036b5f0
-0:040402:jack+bar@foo.com:be45eb4e586a3e08cf7c95c4
-0:040404:fred+xyz@foo.com:20056ff4e877027ef8ba55eb
-EOF
 
 cat > out.$test <<EOF
 5
