@@ -1,0 +1,47 @@
+This software can be distributed and used under any of the following
+licenses:
+
+	CPL
+	public domain
+	BSD (3 clause -- no advertising clause)
+	LGPL (2.1)
+	GPL (2)
+
+in rough order of author preference.
+
+The CPL is probably unique to this package, and is described here:
+http://www.cypherspace.org/CPL/; if you can't be bothered to figure it
+out feel free to use one of the other licenses.  Earlier versions
+where distributed just under CPL.  CPL allows you to re-license under
+a license of your choice, I just include other specific licenses to
+save people having to read, understand and feel confident in the
+validity of the CPL.
+
+NOTE: on systems without a POSIX getopt this package will be linked
+with the included getopt.c which is distributed under GPL 2.
+
+The following are not licensing requirements, just comments from the
+author:
+
+- If you have to make changes to make this library work for your system or
+  application it would be useful if you could tell me what you had to
+  do, and optionally send me the source changes so I can include them
+  or update the library.  The aim is to make a practically useful
+  library.
+
+- It would be useful if you could inform me if you use or distribute
+  hashcash.  The intent here is to give me feedback and insight into the
+  areas of application which people find useful in practice.
+
+- If you are unclear on how to use hashcash there is a FAQ here:
+  http://www.hashcash.org/faq.html.  If that doesn't answer your question or
+  doesn't apply to your usage, feel free to discuss in email.
+
+- It may help the deployment of hashcash as an anti-spam system if different
+  systems based on hashcash were interoperable as far as that makes
+  sense for your system.  To this end the FAQ
+  http://www.hashcash.org/faq.html and Internet-Draft
+  http://www.hashcash.org/draft-hashcash.txt document my
+  thoughts in this area.  See also the hashcash home page
+  http://www.hashcash.org and paper there as I update with links to deployed
+  systems which it might be useful for you to interoperate with.

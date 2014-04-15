@@ -1,0 +1,801 @@
+hashcash-1.22 - 08-Apr-2006 - Adam Back <adam@cypherspace.org>
+
+	* fix progress display bug reported by Phil Marek.  (When the
+	  progress reached 2^30 tests, it would reset the best seen).
+	  This involved multiple related bug fixes, complex thing to
+	  debug!
+
+	* make percentage progress show more precision the larger the
+	  stamp, so progress is less boring.
+
+	* remove some cruft from test.sh so it works again
+
+	* change docs and code output to talk about partial hash
+	  preimages instead of partial collisions, as this is a more
+	  accurate description these days.
+
+hashcash-1.21 - 24-Mar-2006 - Adam Back <adam@cypherspace.org>
+
+	* fix potential heap overflow bug reported by 
+	  Andreas Seltenreich <uwi7@rz.uni-karlsruhe.de>
+
+hashcash-1.20 - 20-Dec-2005 - Adam Back <adam@cypherspace.org>
+
+	* fix bug that -w reports using version 0 semantics even with
+	  version 1 stamps (was ignoring the version field and so
+	  defaulting to version 0 semantics).
+
+	* rest are fedora core4 related fixes
+
+	* remove dependency on openssl libcrypto.so.4 -- I compile rpm
+	  on rh9 for forwards compatibility, but then on fc4 they have only
+	  libcrypto.so.5, so the rpm fails to install with missing
+	  dependency.  Dependencies are ugly so I built with static link to
+	  libcrypto.a instead of dynamic to libcrypto.so.
+
+	* -mcpu is deprecated apparently so I am supposed to use the
+ 	  equivalent -mtune, but that doesn't work on rh9 era gcc
+	  compilers so used -march=pentium-mmx instead; I think the
+	  result should still work on 486 via Jonathan's exception
+	  catcher trapping absense of mmx cpu.
+
+	* the (mode) syntax for mmx registers is deprecated, apparently
+          we're supposed to use (vector_size)
+
+	* with fc4 the strncpy builtin is more fussy about char/unsigned
+          char matching.
+
+	* with fc4 rpmbuild options getting warnings about ignoring fgets
+	  return code
+
+hashcash-1.19 - 17-Dec-2005 - Adam Back <adam@cypherspace.org>
+
+	* update to documentation for hashcash_free in hashcash.h at
+	  Simon Bohlin's suggestion
+
+	* fix for -mb0 reported by bas
+
+hashcash-1.18 - 05-Jul-2005 - Adam Back <adam@cypherspace.org>
+
+	* add a simpler minting API to make it easier to mint stamps
+	  from VB scripting
+
+hashcash-1.17 - 30-Mar-2005 - Adam Back <adam@cypherspace.org>
+
+	* fix for bug Steve Crook reported with purging and checking
+	  at same time.
+
+	* fix for bug Steve Crook reported in double spend checking.
+          (Was bug in new hashcash_db_in higher level db function).
+
+	* apply patch from Jonathan Morton which fixes bug triggered
+          when minting large stamps (over 31-bits).
+
+	* fix printf vulnerability reported by Tavis Ormandy
+          <taviso@gentoo.org>
+
+hashcash-1.16 - 15-Jan-2005 - Adam Back <adam@cypherspace.org>
+
+	* fixed bug with -Z2 (and removed workaround mentioned in 1.15
+	  changelog entry)
+
+hashcash-1.15 - 12-Jan-2005 - Adam Back <adam@cypherspace.org>
+
+	* make "Hashcash:" be accepted as well as "X-Hashcash:"
+	  suggestion by Simon Josefsson <jas@extundo.com>.  This way
+	  if/when the X- is dropped from hashcash headers we will not
+	  have a backwards compatibility problem.  (Well not after
+	  version 1.15).
+
+	* implement the -Z option to compress stamps; in fact the
+	  usage changed so -Z takes an argument: 0, 1 or 2.  0 = not
+	  compressed, 1 = compressed but not so the counter + padding
+	  is split, and 2 = very compressed, but slow.  (Due to a late
+	  discovered bug 2 is the same as 1 for now until I can fix
+	  that.)
+
+	* added -O x -sv to request benchtest of core x only
+
+	* make code work with -DOPENSSL, think this slipped during
+	  integration of Jonathan's libfastmint as it uses some lower
+	  level openssl APIs internally.  I fixed it but it might be
+	  a bit openssl version specific, if they changed the state
+	  fields at any point.  (This change coincidentally I think
+	  should work around the linking with openssl problem that Hal
+	  Finney <hal@finney.org> reported).
+
+	* add libhashcash.a intermediate target to make hashcash more
+	  convenient to link into other software on linux.  (A
+	  suggestion from Hal Finney who was trying to link to his
+	  RPOW system.)
+
+hashcash-1.14 - 14-Dec-2004 - Adam Back <adam@cypherspace.org>
+
+	* make hashcash -cX accept continuation lines starting with
+	  space as well as tab
+
+	* add library function to wrap lines and use it from hashcash
+	  command line tool.
+
+	* fix long vs time_t prototype mismatch that was giving
+	  compile errors on BSD; also cleaned up some warnings that
+	  can be obtained with gcc -Wall.
+
+hashcash-1.13 - 16-Oct-2004 - Adam Back <adam@cypherspace.org>
+
+	* fix bug where grace period not applied to double-spend db.
+	  I think this could allow people to double-spend in the time
+	  period after the resulting premature purging and before
+	  expiry (which is the grace period)
+
+	* add new feature where -e <period> can be used with -p to
+	  override the expiry given at spend time (that is stored in
+	  the double-spend db).  Inspired by question from Atom
+          Smasher <atom@suspicious.org>.
+
+	* clean up some memory leaks
+
+	* add hashcash_free function (DLL scenario caller can't rely
+          on having same deallocator to call as library compiled with)
+
+	* lots more function documentation in hashcash.h for
+	  library/DLL users, renamed all exported library functions to
+	  start with hashcash_ prefix.
+
+	* added hashcash_version function.
+
+	* added callback function to allow user quit (returns
+	  HASHCASH_USER_ABORT) and to give progress feedback.
+
+	* added option -P which uses the callback to show progress.
+
+	* added -O core option to allow user selection of core.
+
+	* added small parameter to hashcash (to request small stamps
+	  rather than slightly larger fast to generate stamps), and -Z
+	  option to turn this on.  (In fact it is not implemented yet
+	  but want to avoid changing library interface later).
+
+hashcash-1.12 - 03-Oct-2004 - Adam Back <adam@cypherspace.org>
+
+	* make a HASHCASH.DLL on windows using MINGW.
+
+hashcash-1.11 - 02-Oct-2004 - Adam Back <adam@cypherspace.org>
+
+	* _really_ fix trailing ascii(32) (spaces).  I have no idea
+	  how I decided the 1.10 code fixed it.  Must have messed up
+	  the test I was using to check it worked.
+
+hashcash-1.10 - 01-Oct-2004 - Adam Back <adam@cypherspace.org>
+
+	* remove trailing ascii(32) (spaces) which padding somehow
+	  leaves
+
+hashcash-1.09 - 17-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* fix missing space between resource name and width with -cv
+	  reported by Panta Admin.
+
+	* apply cumulative patch of 3 patches from Jonathan Morton.
+
+hashcash-1.08 - 12-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* fix bug reported by Panta Admin <admin@panta-rhei.dyndns.org>
+	  must have introduced in recent version where with pipe
+	  prints stamp twice.
+
+	* attempt to work around MINGW problem with signals -- somehow
+	  it is changing it's mind about whether the MMX core can run
+	  from the first call to the 2nd call.  But the test result
+          is cached so it is hard to see how this happens.  Not clear
+	  if this work-around will work as don't have a 486 to test
+	  on.  (Work around is make single gIsMMXpresent shared
+	  between the two mmx cores, should at least result in signal
+	  call being used fewer times (max 1 time).  Also pass 1 to
+	  longjmp.)
+
+	* give up entirely on conditional make.  One Makefile, no
+	  funky stuff.  Prints info about what you need to do to
+	  compile on your platform and goes ahead and compiles with
+	  generic anyway.  Make new gnu (generic) target for gcc, and
+	  normal generic with no gcc specific flags.
+
+hashcash-1.07 - 11-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* patch from J H Wilson <jhw@ieee.org> to initialize a bunch
+	  of variables (actually I had to back some of these out to
+	  get to compile on non gnu compilers -- some of those
+	  structure initializations are gnu extensions I think.)
+
+	* also J H Wilson one of patch changes was to avoid mmx
+	  assembler code clobbering ebx register which is needed for
+	  fPIC support.
+
+	* better randomness on windows using the CAPI rng
+	  CryptGenRandom.  Still compiles using MINGW ... whee!
+
+	* made a separate GNUmakefile for gnu make (it takes that one
+	  first over Makefile) and a Makefile which is the same but no
+	  ifdef stuff which confuses some other makes, and no gnu
+	  specific compile options (for x86 anyway).
+
+	* add gettimeofday timer into entropy to improve randomness on
+	  systems which do not have /dev/urandom, and are not windows
+
+hashcash-1.06 - 10-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* patch from Justin Guyett <justin@soze.net> to fix unsigned
+	  error which would have made libfastmint do something odd if
+	  no minter worked.
+
+	* Makefile changes to compile under MINGW (gnu for windows
+	  portability layer which produces win32 exes).  new target
+	  mingw-exe
+
+	* #ifdefs to avoid locking on MINGW (seems no lock support!)
+
+	* #ifdefs to use longjmp instead of siglongjmp, signal instead
+	  of sigaction on MINGW
+
+	* #ifdef to use chsize instead of ftruncate on MINGW
+
+hashcash-1.05 - 08-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* and another issue (last I promise!) with case comparison.
+	  1.04 change was good; however flaw in 1.02 means 1.04 minted
+	  stamps (resource not canonicalized to lowercase) can falsely
+	  fail to verify with 1.02 - 1.00 as those versions presume
+	  canonicalized stamp.  So we go back to making -C have effect
+	  on minting also.  With no -C canonicalize to lowercase, with
+	  -C use resource as-is.
+
+	* get rid of -W flag reserved for posix, use -M in it's place.
+
+hashcash-1.04 - 07-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* fixed issue with case comparisons -- presumed resources were
+	  in lower case at minting -- better to just ignore case
+	  during comparison.  Then will accept stamps containing upper
+	  case or mixed-case resource names.
+
+	* integrate fastmint_benchtest as -sv option to hashcash.
+
+	* introduce COPT as well as CFLAGS as optimization subset of
+	  flags passed with CFLAGS to nested make -- suits RPM
+
+hashcash-1.03 - 07-Sep-2004 - Adam Back <adam@cypherspace.org>
+
+	* remove TARGET_ARCH again, let's keep things simple.  Just
+	  use CFLAGS period.
+
+	* figured out what GENTOO ebuild is doing, changed ebuild file
+
+	* remove recursion from hashcash_fastmint
+
+	* start using TARGET_ARCH in Makefile, hope it's portable;
+	  it's an attempt to be more GENTOO ebuild friendly
+
+	* Makefile change: when PACKAGE is defined build default
+	  target, otherwise echo the target info as before
+
+	* removed a bunch of old code replaced by fastmint, got rid of
+	  CHROMATIX define
+
+	* fix following errors reported by Atom Smasher <atom@suspicious.org>
+
+		* fix width measuring bug with v0 stamps
+
+		* fix resource read from stdin bug
+
+		* use GNU getopt source always -- getopt
+		  on BSD behaves differently (the getopt source is
+		  smart -- it comments itself out on machines with
+		  GNU_LIBRARY so using it always is not a problem)
+
+		* bug: should send the time estimate to
+		  stderr, and the stamp to stdout
+
+		* -z width flag not properly error checked
+		  to enforce UTCTIME restrictions (only valid widths
+		  6, 10 or 12 digits)
+
+	* update LICENSE to note you end up with some GNU GPL taint
+	  from getopt on systems without POSIX getopt which probably
+	  forces you to use GPL as I link against it.  Unless someone
+	  wants to re-write the getopt or can point me at a public
+	  domain replacement.  In particular this includes BSD and
+	  MACH (OSX) and as before windows.
+
+	* apply patch from Jonathan Morton <chromi@chromatix.demon.co.uk>
+	  with following fixes:
+	
+	  	* fix bug in mmx assembler code exposed by integration
+
+		* add generic target in Makefile
+	
+		* increase benchmark work factor to improve accuracy of
+		  results (as not used at run-time)
+	
+		* new hashcash_quickbench() 
+
+	* changes to hashcash_quickbench() to give faster timing on
+       	  linux x86 which has low resolution clock() (1/100th sec vs
+	  1usec on OSX).  (It was taking ~ 0.6sec on linux x86, code
+	  takes 0.1 sec now which is less noticeable)
+
+	* related to above studiously avoided calling hc_per_sec()
+	  which invokes hashcash_quickbench() -- seems a shame to burn
+	  1/10th sec in default mint creation path if user typically
+	  doesn't care about the info about how long it took.  Now you
+	  have to give -s or -v to get speed info when minting.
+
+	* fix case sensitivity bug reported by Atom Smasher
+	  <atom@suspicious.org>
+	
+	* add CPL option back to LICENSE file
+	* add make targets for different processors
+	* remove 2nd call of hashcash_benchtest (supposed to call
+	  hc_per_second which caches not hashcash_per_second)
+	* enable static selection of fastmint cores, disable run
+	  time benchtest
+
+	* applied fastmint fix patch from Jonathan Morton
+	  <chromi@chromatix.demon.co.uk> and re-enabled fastmint
+	  (remove -DCHROMATIX in Makefile to disable)
+
+hashcash-1.02 - 11-Aug-2004 - Adam Back <adam@cypherspace.org>
+
+	* minor documentation stuff (put back ref to sha1-hashcash in
+	  hashcash.pod manpage)
+
+	* add back requests to LICENSE file
+
+hashcash-1.01 - 08-Aug-2004 - Adam Back <adam@cypherspace.org>
+
+	* fold in patches from by Hubert Chan
+	  <hubert@uhoreg.ca> and Justin Guyett <justin@soze.net> to
+	  clean up some stuff and fix minor bugs.
+
+	* another couple of minor bug fixes.
+
+hashcash-1.00 - 07-Aug-2004 - Adam Back <adam@cypherspace.org>
+
+	* increment version number, 1.x to reflect move to version 1
+	  stamp format
+
+	* explicit bits field in token (helps people who want to
+	  prevalidate header and parse, and who want to know what the
+	  intended bits were vs how lucky the sender got); new stamp
+	  size definition is min( counted_bits, explicit bits field )
+
+	* no : in resource field to make easier to parse eg with cut,
+	  awk etc
+
+	* new extension field
+
+	* reclaimed -x to use for passing eXtension data (old -x no longer
+	  available, use -X, which has string fixed to X-Hashcash)
+
+	* put /dev/urandom macro for MAC from
+	  Jonathan Morton <chromi@chromatix.demon.co.uk> so we use
+	  /dev/urandom on MAC
+
+	* copy in and adjust Makefile for Jonathan Morton's optimized
+	  minter (need to integrate)
+
+	* copy in Jonathan Morton's COMPACT option (method B vs method A
+	  from fips-180-1, uses less registers) for libsha1.c
+
+	* copy in next rev of minter breaks 4megahashes/sec barrier on
+	  3.06Ghz P4 -- disabled at present until some stuff gets
+	  fixed and we figure out rpm/deb package portability
+
+	* added back v0 read support (but still only generates v1)
+
+	* pr5: first attempt at integrating libfastmint (some bug in
+	  my integration code, broken so far)
+
+	* (pr6: libfastmint integ still not working)
+
+	* pr6: made X-Hashcash header accepatance case insensitive
+
+	* pr7: also reject tokens with count_bits < claimed_bits
+	  (as previous logic of setting bits = min( count_bits, claimed_bits)
+	  necessary to avoid people getting lucky
+
+	* use clock() instead of wall time
+
+	* expand max stamp size out to cope with 10KB extension fields
+
+	* update man page and usage with v1 stuff
+
+	* and release as 1.00 ready for Hubert Chan <hubert@uhoreg.ca>
+	  to package for the imminent debian release
+
+hashcash-0.33 - 13-Apr-2004 - Adam Back <adam@cypherspace.org>
+
+	* allow wild card without @ sign if there is no @ sign in
+	  pattern
+
+hashcash-0.32 - 09-Apr-2004 - Adam Back <adam@cypherspace.org>
+
+	* documentation fixes
+
+	* change multiple regexp behavior; previous algorithm only allowed
+	  higher overrides; need to support both higher and lower
+	  overrides.  This also required introducing -o option to join
+	  regexps which are set intersections where otherwise risk of
+	  uninteded override occuring and mail being rejected as spent or
+	  insufficent bits.  Now revert to lexical order most specific
+	  regexp first.
+
+	* wrote test script test.sh
+
+	* fix a few minor bugs uncovered by above test script
+
+	* -c now means check date
+
+	* allow -n etc with -X
+
+	* introduced -b relative to default way of specifying bits
+	
+	* -b is no optional, if want token fully checked, but can give -b
+	  default; or new relative to default -b +0.
+	
+	
+hashcash-0.31 - 01-Apr-2004 - Adam Back <adam@cypherspace.org>
+
+	* final 0.x version (v0 format) release before 1.x version (v1
+	  format) (bug fixes / maintenance only afterwards on 0.x version)
+	
+	* remove -O3 from Makefile, use -O instead as fails on HPUX or
+	  sun.
+ 
+	* fix some out of date usage stuff in hashcash man page.
+
+	* disable timing loop unless timing needed
+
+	* fix multiple reciept bug in -cX/-cx reported by Junior Ang
+	  <junior@chrysant.com>.  If you receive a mail multiple times
+	  because you are on the receipt list multiple times, there will
+	  be multiple hashcash headers for you.  In this case it is
+	  necessary to examine the first matching, non-spent stamp.  The
+	  bug was previous versions stopped on the first matching stamp
+	  and then failed because it was spent.  Need to keep going and
+	  check later also matching stamps until find one which is not
+	  spent.
+
+	* rationalize command line args further.  No implied -m , more
+	  things that are awkward to implement but not that useful are
+	  disallowed.
+
+	* change purge operation to use read-write operations in the same
+	  sdb file rather than creating a temporary file.  This makes
+	  locking easier and is also aesthetically nicer.
+
+	* add flock(2) database file write locking, and change creation
+	  logic to use open(2) to avoid creation db race-condition also.
+
+	* make resource string case insensitive by default to match email
+	  semantics; add -C option to force case sensitivity if desired
+	  (email addresses are converted to and stored in lower case, so
+	  you have to both mint and verify with case sensitivity turned on
+	  to make use of case sensitivity)
+
+	* support minting multiple resources with multiple command line
+	  args.  Also if no resources given on command line, read
+	  resources from stdin.
+	
+	* support supplying multiple email addresses, for people who want
+	  to accept as multiple addresses.
+
+	* support multiple resources on purging also.
+
+	* support multiple tokens with check mode as cmd line args, if
+	  none given as args, read tokens from stdin; if -X/-x read from
+	  cmd line args, then from stdin as email (matching stamp headers
+	  skipping stamp headers)
+ 	
+	* rename default simple database to hashcash.sdb (.sdb extension),
+	  to distinguish from planned support for better database.
+	
+	* fix bug in PPUTS didn't match PPRINTF
+
+	* fixup -l, -w, -n so they support multiple tokens also
+	
+	* made use of -b optional (get the default on mint & check)
+
+	* added "-b default" to specify default number of bits with -s
+	  (otherwise no way to measure the default speed without
+	  specifying the number of bits -- and when this can change over
+	  time it would be inconvenient for scripting to have to
+	  separately obtain this)
+	
+	* added support for wildcard email addresses with '*' wildcard
+	  marker.  '*' before '@' does not match '@', '*' after '@' does
+	  not match '.'.  And both email addresses must contain @ sign and
+	  same number of '.' separated sub domains as wildcard address.
+	  Wildcard matching is the new default.  Use -S to get plain
+	  string match.  Can turn back on with -W.
+
+	* increased size of random string to reduce chance of collisions
+	  between users.  Now negligible chance of collision with typical
+	  token sizes.
+	
+	* added support for regexps.  Can work from POSIX library or BSD
+	  regexp library.  Use -E to get regexps.  Input is always in
+	  POSIX syntax (specials are not quoted to have special action;
+	  are quoted to have plain meaning).  If using BSD library still
+	  give input in POSIX syntax, it's converted to BSD internally.
+	
+	* implement highest matching semantics.  Ensures that eg -c -b10
+	  *@bar.invalid -b15 adam@bar.invalid will not accept a 10 bit
+	  token for adam@bar.invalid.  (This is done by sorting resources
+	  highest bits required first and accepting only the first highest
+	  matching resource.)
+	
+	* change arg parsing so -b, -e, -g, -z, -E, -W, -S, apply to the
+	  following resources and tokens, and can be changed for later
+	  resources/tokens with tokens and args interspersed.  Means you
+	  have to give these args before the resource/token or you will
+	  get defaults.
+	
+hashcash-0.30 - 04-Mar-2004 - Adam Back <adam@cypherspace.org>
+
+	* make -cX check multiple X-Hashcash lines until it finds the
+	  right one.  Bug reported by Kyle Hasselbacher <kyle@toehold.com>.
+
+hashcash-0.29 - 04-Mar-2004 - Adam Back <adam@cypherspace.org>
+
+	* fix prototype mismatch of function hashcash_check in
+	  hashcash.h vs libhc.c which caused compile failure on
+	  openBSD and freeBSD
+
+	* change to make it compile on MAC OSX (need to recognize OSX
+	  and treat as unix like for headers to include)
+
+	* change to make it compile on solaris 9 (and POSIX / SVR
+          systems in general).  Turns out putenv(3) is more portable
+	  than setenv(3) / unsetenv(3)
+
+	* update sha1 man page to name it sha1-hashcash to avoid collision
+	  with openssl sha1(1).  By default with openssl there is not
+	  actually any program named sha1, rather sha1 is a subprogram of
+	  openssl invoked "openssl sha1".  However I think it may still be
+	  possible to compile that as a separate program or symlink sha1 to
+	  openssl to get that.
+
+	* update sha1 man pages to refer to the other common sha1
+	  implementations.
+
+	* update LICENSE request
+
+hashcash-0.28 - 18-Sep-2003 - Adam Back <adam@cypherspace.org>
+
+	* fix bug with timezone handling reported by Joris Bontje
+	  <jbontje@suespammers.org> (turns out utctime function is
+	  redundant and wrong; time(2) gives time in UTCTime (doh)).
+	  Reason for confusion is ctime is in local time, so converts
+	  UTC time into local time even if you don't want that.  But
+	  c-library time handling functions are really not designed
+          for converting back from local to UTCTime when represented
+          as a time_t.  Changed a bunch of time related stuff to fix
+	  this up.
+
+	* add -g flag for grace period suggested by Marc Lehmann
+	  <pcg@goof.com> to avoid undue rejection of hashcash stamps
+	  because of clock skew (or timezone / daylight savings time
+	  off by one errors).  Default for email is 2 days (48 hours)
+	  fast or slow.
+
+	* change validity period default to 28 days; previous default
+	  was forever which did not match recommended email default
+
+	* add -z flag to explicitly specify the width in chars of the
+	  time field.  This flag deprecates and overrides the -m -e
+	  way to implicitly specify date field width.  As before the
+	  default is 6 chars (date only in YYMMDD).
+
+hashcash-0.27 - 11-Sep-2003 - Adam Back <adam@cypherspace.org>
+
+	* add space char after 'X-Hashcash:' header that you get with
+	  -X option
+
+	* add LICENSE file
+
+hashcash-0.26 - 26-Jun-2003 - Adam Back <adam@cypherspace.org>
+
+	* accidentally folded in some non-standard VERBOSE output I was
+	  playing with.  This change makes it really standard output
+	  comparable to FIPS 180-1 appendices.
+
+	* added a version number -- use -V to display it.  Also -v
+	  (lowercase) by itself with no other arguments displays the
+	  version umber also.
+
+	* bug fix for quiet output (when not going to a pipe, still
+	  need to see output!)
+
+	* update everything to point at http://www.hashcash.org now we
+	  have the domain courtesy of it's previous owner Ashish
+	  Gulhati <agul@cpan.org> (at no charge -- he declined my
+	  offer to pay for it and instead gave it to me!)
+
+	* made a man page for sha1 utility also.
+
+	* add -X option which is a shorthand version of -x 'X-Hashcash:'
+
+	* remove leading and trailing blanks from hashcash tokens to
+	  make them more robustly survive email transit.
+
+hashcash-0.25 - 15-May-2003 - Adam Back <adam@cypherspace.org>
+
+	* fix VERBOSE trace output of sha1 implementation to match FIPS
+	  180-1 standard test vector examples (Note: this no impact on the
+	  result, just allows direct comparison to the test vectors in
+	  180-1).  The FIPS 180-1 VERBOSE output got broken when I unrolled
+	  the rotates in the round function.
+
+	* remove the automatic turning on of quiet mode if the output
+	  is a pipe per note from Simon Josefsson <jas@extundo.com> about
+	  how that can be inconvenient for scripting
+
+hashcash-0.24 - 15-Mar-2003 - Adam Back <adam@cypherspace.org>
+
+	* fix minor error which made hashcash_expected_tries a tiny
+	  amount less efficient than realised
+
+hashcash-0.23 - 15-Mar-2003 - Adam Back <adam@cypherspace.org>
+
+	* fix error in libhc would always fail in hashcash_check
+	  reported by Alan Barclay <gorilla@elaine.furryape.com>; note this
+	  bug does not affect the hashcash command line tool as it does not
+	  use this API
+
+	* minor Makefile changes
+
+hashcash-0.22 - 16-Aug-2002 - Adam Back <adam@cypherspace.org>
+
+	* fix uninitialized counter string in hashcash_per_sec, bug
+          reported by Mathias Langer
+
+hashcash-0.21 - 15-Aug-2002 - Adam Back <adam@cypherspace.org>
+
+	* fix compile warnings with VC++ 6. 
+
+hashcash-0.20 - 13-Aug-2002 - Adam Back <adam@cypherspace.org>
+
+	* change format to include version number
+	* change collision to be on 0^k string instead of on
+	  SHA1(date:resource)
+
+hashcash-0.19 - 25-Apr-2002 - Adam Back <adam@cypherspace.org>
+
+	* fix bug reported that minting always returns failure
+	* fix erroneous logic involving validation of validity periods
+
+hashcash-0.18 - 23-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* fix token parsing to allow resource names with :s
+	  in them (eg. urls etc)
+	* change hashcash_mint API a bit
+	* add programming APIs for all other functions except
+	  double spend db, and move library code to libhc.c
+
+hashcash-0.17 - 23-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* add programming API for hashcash_mint
+	* separate hashcash tool program from hashcash library code
+	* remove trailing 'Z' option for times -- adds no value
+
+hashcash-0.16 - 15-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* minor clean up stuff:
+	* allow longer collision strings for compatibility with future
+	  versions
+	* reject collision strings with non-printable and non ascii
+          chars (< ascii(32) and > ascii(127)
+	* make install now installs man page
+	* fix VMS compile warning
+	* fix bad portability assumption about time_t being signed
+	* simple VMS scripting build script
+
+hashcash-0.15 - 14-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* deal with unix, DOS, and mac lf endings (rather than just unix)
+	* fix bug reported by Doc.Cypher <doc_cypher@redneck.gacracker.org>
+	* modifications to compile under VC++ 6.0 on win32
+	* add -i feature
+
+hashcash-0.14 - 13-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* revamped flags and arguments
+	* lots of new options and features
+	* more safe error reporting (avoid risk of false positives)
+	* fix all warnings
+	* make compile on machines with 64 bit longs
+	* make compile on IRIX
+	* make Makefile more portable
+	* more reliable timing strategy
+	* remove separate endian.c -- put endian stuff in libsha1.c
+	* create man page
+	* update documentation
+	* re-implement SDB simple database to have a more standard
+	  interface to facilitate plugging in gdb etc
+	* import random number interface to /dev/urandom
+
+hashcash-0.13 - 03-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+ 	* fix bug introduced in 0.12
+	* update documentation
+
+hashcash-0.12 - 03-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+	* add option to verify resource name given on command line
+          matches resource name in collision
+	* also more compatible with 0.10 command line as a result
+     	* add option to print resource name parsed from collision
+
+hashcash-0.11 - 02-Mar-2002 - Adam Back <adam@cypherspace.org>
+
+  	* fix buffer overflow reported by Max Greenius
+	* add -v mode suggested by Michael Shinn
+	* add interactive mode instead of usage as default, another
+	  suggestion from Michael Shinn
+	* add explicit -h for usage
+	* add -q mode for even quieter output (batch like mode)
+	* add -x option to take collision to verify from stdin
+	* update the documentation in readme.txt to reflect
+	  new format and options
+	* add install target to makefile to install binaries
+	  for hashcash and sha1 in /usr/local/bin, another
+	  suggestion from Michael Shinn
+
+hashcash-0.10 - 20-Feb-2002 - Michael Shinn <mike@shinn.net>
+
+	* change output format slightly to make it easier
+	  to recognize the collision amongst the verbose output
+
+hashcash-0.09 - 25-May-2001 - Adam Back <adam@cypherspace.org>
+	
+	* clean up sha1.h
+	* add simple makefile
+	* fix bug in endian.h with linux redhat62
+	* change format to use : delimiters
+	* changed old version numers to be two digit
+	* standardised on bsd indentation
+	
+hashcash-0.08 - 28-Feb-2000 - Adam Back <adam@cypherspace.org>
+
+	* support for openSSL sha1 (-DOPENSSL)
+
+hashcash-0.07 - 08-Dec-1997 - Adam Back <adam@cypherspace.org>
+	
+	* bug fix in SHA1 code
+
+hashcash-0.06 - 07-May-1997 - Andy Dustman <andy@CCMSD.chem.uga.edu>
+
+	* bug fix + SPARSE compile option for library use
+
+hashcash-0.05 - 07-Mar-1997 - Adam Back <adam@cypherspace.org>
+
+	* made mods as suggested by Andy Dustman <andy@CCMSD.chem.uga.edu>
+	  to avoid collision collisions on larger collision lengths
+	  previous method was bugged
+
+hashcash-0.04 - 31-Mar-1997 - Adam Back <adam@cypherspace.org>
+
+	* no description
+
+hashcash-0.03 - 30-Mar-1997 - Adam Back <adam@cypherspace.org>
+
+	* put in fast SHA1, and other mods giving a 4x speedup
+	* plus a few bug fixes
+
+hashcash-0.02 - 28-Mar-1997 - Chris Kuethe <ckuethe@gpu.srv.ualberta.ca>
+
+	* added minimal macintosh support (Think C)
+
+hashcash-0.01 - 27-Mar-1997 - Adam Back <adam@cypherspace.org>
+
+	* first version
