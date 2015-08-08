@@ -1,0 +1,15 @@
+language: c
+
+compiler:
+  - gcc
+
+script:
+  - autoreconf -fiv
+  - ./configure --prefix=$HOME/build/hashcash
+  - make
+  - make test
+  - make install
+
+#branches:
+#  only:
+#    - master
