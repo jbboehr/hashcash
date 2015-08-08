@@ -19,7 +19,6 @@ libhashcash_la_SOURCES = \
 
 libhashcash_la_LDFLAGS = \
 	-no-undefined \
-	-module \
 	-shared \
 	-export-symbols-regex '^(hashcash|sdb_|db_|SHA1_)' \
 	-version-info 0:0:0 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
